@@ -4,10 +4,16 @@
   "description": "backend for kanban todo website ",
   "main": "src/index.ts",
   "scripts": {
-    "build":"tsc",
-    "start": "node dist/index.js",
-    "dev":"nodemon --exec ts-node src/index.ts"
+    "start": "nodemon src/index.ts",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist"
   },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
   "author": "Purushotam",
   "license": "ISC",
   "dependencies": {
@@ -24,5 +30,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.3",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "pre-commit": "^1.2.2",
+    "rimraf": "^6.0.1"
   }
 }
