@@ -9,8 +9,9 @@
   ],
   "routes": [
       {
-          "src": "/(.*)",
-          "dest": "dist/index.js"
+          "src": "src/(.*)",
+          "dest": "dist/index.js",
+          "methods":"*"
       }
   ]
 }
