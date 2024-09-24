@@ -37,8 +37,8 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const userWithId = user.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3 * 60 * 60 * 1000, path: '/' });
-        res.cookie("authenticate", true, { sameSite: 'none' });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000, path: '/' });
+        res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
         res.status(200).json({ success: true, message: "Login successful" });
     }
     catch (error) {
@@ -67,8 +67,8 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
         yield newUser.save();
         const userWithId = newUser.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3 * 60 * 60 * 1000, path: '/' });
-        res.cookie("authenticate", true, { sameSite: 'none', path: "/" });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000, path: '/' });
+        res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
         return res.status(201).json({ message: "Signup successful.", success: true, });
     }
     catch (error) {
@@ -79,11 +79,11 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
 router.get("/logout", (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production',
         path: "/"
     });
-    res.clearCookie('authenticate', { secure: process.env.NODE_ENV === 'production', sameSite: true, path: '/' });
+    res.clearCookie('authenticate', { secure: process.env.NODE_ENV === 'production', sameSite: "lax", path: '/' });
     return res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 router.get("/", authMiddleware_1.authenticate, (req, res) => {
