@@ -37,7 +37,7 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const userWithId = user.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 3 * 60 * 60 * 1000, });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000, });
         res.cookie("authenticate", true);
         res.status(200).json({ success: true, message: "Login successful" });
     }
@@ -67,7 +67,7 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
         yield newUser.save();
         const userWithId = newUser.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 3 * 60 * 60 * 1000, });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000, });
         res.cookie("authenticate", true);
         return res.status(201).json({ message: "Signup successful.", success: true, });
     }
@@ -79,13 +79,10 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
 router.get("/logout", (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production',
     });
-    res.clearCookie('authenticate', {
-        sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production',
-    });
+    res.clearCookie('authenticate', { secure: process.env.NODE_ENV === 'production' });
     return res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 router.get("/", authMiddleware_1.authenticate, (req, res) => {
