@@ -28,8 +28,8 @@ router.post("/login", async (req: Request, res: Response) => {
         }
         const userWithId = user.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3 * 60 * 60 * 1000, });
-        res.cookie("authenticate", true);
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3 * 60 * 60 * 1000,path: '/'  });
+        res.cookie("authenticate", true,{sameSite:'none'});
         res.status(200).json({ success: true, message: "Login successful" });
     } catch (error: any) {
         console.log("Error occured while signin in.", error.message)
@@ -61,8 +61,8 @@ router.post("/signup", async (req: Request, res: Response) => {
         await newUser.save();
         const userWithId = newUser.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3 * 60 * 60 * 1000, });
-        res.cookie("authenticate", true);
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3 * 60 * 60 * 1000,path: '/'  });
+        res.cookie("authenticate", true,{sameSite:'none',path:"/"});
         return res.status(201).json({ message: "Signup successful.", success: true, });
     } catch (error: any) {
         console.error("Error during signup:", error?.message);
@@ -75,9 +75,10 @@ router.get("/logout", (req: Request, res: Response) => {
         httpOnly: true,
         sameSite: 'none',
         secure: process.env.NODE_ENV === 'production',
+        path:"/"
     });
 
-    res.clearCookie('authenticate', {secure: process.env.NODE_ENV === 'production'});
+    res.clearCookie('authenticate', {secure: process.env.NODE_ENV === 'production',sameSite:true,path:'/'});
     return res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 router.get("/", authenticate, (req: Request, res: Response) => {
