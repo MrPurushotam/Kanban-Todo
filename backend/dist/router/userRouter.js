@@ -22,7 +22,7 @@ const signupSchema_1 = require("../schema/signupSchema");
 require("dotenv/config");
 const router = (0, express_1.Router)();
 // @ts-epect-error
-const sameSiteAttribute = process.env.SAME_SITE;
+const sameSiteAttribute = process.env.SAME_SITE || "none";
 router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { success, error, data } = signinSchema_1.signinSchema.safeParse(req.body);
     if (!success) {
@@ -40,9 +40,8 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const userWithId = user.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        // @ts-expect-error
         res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, maxAge: 3 * 60 * 60 * 1000, path: '/' });
-        res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
+        res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, path: '/', maxAge: 3 * 60 * 60 * 1000 });
         res.status(200).json({ success: true, message: "Login successful" });
     }
     catch (error) {
@@ -71,9 +70,8 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
         yield newUser.save();
         const userWithId = newUser.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        // @ts-expect-error
         res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, maxAge: 3 * 60 * 60 * 1000, path: '/' });
-        res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
+        res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, path: '/', maxAge: 3 * 60 * 60 * 1000 });
         return res.status(201).json({ message: "Signup successful.", success: true, });
     }
     catch (error) {
@@ -82,13 +80,8 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 router.get("/logout", (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        path: "/"
-    });
-    res.clearCookie('authenticate', { secure: process.env.NODE_ENV === 'production', sameSite: "lax", path: '/' });
+    res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, maxAge: 3 * 60 * 60 * 1000, path: '/' });
+    res.clearCookie("authenticate", { secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, path: '/', maxAge: 3 * 60 * 60 * 1000 });
     return res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 router.get("/", authMiddleware_1.authenticate, (req, res) => {

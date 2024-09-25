@@ -1,8 +1,8 @@
 "use client"
 
-import { isAuthenticatedAtom, workspaceAtom } from '@/states/atoms'
-import React, { useEffect, useState } from 'react'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { workspaceAtom } from '@/states/atoms'
+import React, {  useState } from 'react'
+import { useRecoilState} from 'recoil'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
@@ -86,7 +86,20 @@ const PrimaryDashboard = () => {
                         </DropdownMenu>
                     </div>
                 ))}
+                {
+                    workspaces?.length < 1 &&
+                    <div className="flex gap-2 w-full p-4 rounded-sm shadow-sm">
+                        <div className="w-1/2">
+                            <img src={"https://png.pngtree.com/png-vector/20220513/ourmid/pngtree-oops-comic-bubble-sound-text-png-image_4574095.png"} alt="oops!" className='text-center aspect-[3/2] w-70 h-50 object-cover' />
+                        </div>
+                        <div className="w-1/2 h-50 flex items-center">
+                            <Briefcase className="w-8 h-8 text-sky-300" />
+                            <h2 className=' break-words text-xl font-semibold text-gray-80'>Yoou have no workspace. Createee it asap!!!</h2>
+                        </div>
+                    </div>
+                }
             </div>
+
             <WorkspaceForm
                 isUpdating={editWorkspace ? true : false}
                 currentWorkspace={editWorkspace}
