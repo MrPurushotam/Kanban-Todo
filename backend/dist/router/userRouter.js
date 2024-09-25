@@ -19,7 +19,10 @@ const user_1 = __importDefault(require("../models/user"));
 const jwtFunctions_1 = require("../utils/jwtFunctions");
 const authMiddleware_1 = require("../middlewares/authMiddleware");
 const signupSchema_1 = require("../schema/signupSchema");
+require("dotenv/config");
 const router = (0, express_1.Router)();
+// @ts-epect-error
+const sameSiteAttribute = process.env.SAME_SITE;
 router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { success, error, data } = signinSchema_1.signinSchema.safeParse(req.body);
     if (!success) {
@@ -37,7 +40,8 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const userWithId = user.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000, path: '/' });
+        // @ts-expect-error
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, maxAge: 3 * 60 * 60 * 1000, path: '/' });
         res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
         res.status(200).json({ success: true, message: "Login successful" });
     }
@@ -67,7 +71,8 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
         yield newUser.save();
         const userWithId = newUser.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000, path: '/' });
+        // @ts-expect-error
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, maxAge: 3 * 60 * 60 * 1000, path: '/' });
         res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
         return res.status(201).json({ message: "Signup successful.", success: true, });
     }

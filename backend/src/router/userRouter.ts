@@ -5,9 +5,10 @@ import User from "../models/user";
 import { createToken } from "../utils/jwtFunctions";
 import { authenticate } from "../middlewares/authMiddleware";
 import { signupSchema } from "../schema/signupSchema";
-
+import "dotenv/config"
 const router = Router();
-
+// @ts-epect-error
+const sameSiteAttribute = process.env.SAME_SITE as string
 
 router.post("/login", async (req: Request, res: Response) => {
     const { success, error, data } = signinSchema.safeParse(req.body);
@@ -28,7 +29,8 @@ router.post("/login", async (req: Request, res: Response) => {
         }
         const userWithId = user.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000,path: '/'});
+        // @ts-expect-error
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, maxAge: 3 * 60 * 60 * 1000,path: '/'});
         res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
         res.status(200).json({ success: true, message: "Login successful" });
     } catch (error: any) {
@@ -61,7 +63,8 @@ router.post("/signup", async (req: Request, res: Response) => {
         await newUser.save();
         const userWithId = newUser.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 3 * 60 * 60 * 1000,path: '/'});
+        // @ts-expect-error
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: sameSiteAttribute, maxAge: 3 * 60 * 60 * 1000,path: '/'});
         res.cookie("authenticate", true, { secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
         return res.status(201).json({ message: "Signup successful.", success: true, });
     } catch (error: any) {
