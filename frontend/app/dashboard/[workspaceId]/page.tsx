@@ -1,6 +1,6 @@
 "use client"
 import { api } from '@/lib/api'
-import { todosAtom, viewTypeAtom, workspaceAtom, isAuthenticatedAtom } from '@/states/atoms'
+import { todosAtom, viewTypeAtom, workspaceAtom } from '@/states/atoms'
 import React, { useEffect, useState } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu"
