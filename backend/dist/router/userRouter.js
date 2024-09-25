@@ -40,8 +40,8 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const userWithId = user.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { maxAge: 3 * 60 * 60 * 1000, secure: true });
-        res.cookie("authenticate", true, { maxAge: 3 * 60 * 60 * 1000, secure: true });
+        res.cookie('token', token, { maxAge: 3 * 60 * 60 * 1000, secure: true, sameSite: sameSiteAttribute });
+        res.cookie("authenticate", true, { maxAge: 3 * 60 * 60 * 1000, secure: true, sameSite: sameSiteAttribute });
         res.status(200).json({ success: true, message: "Login successful" });
     }
     catch (error) {
@@ -70,8 +70,8 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
         yield newUser.save();
         const userWithId = newUser.toJSON();
         const token = (0, jwtFunctions_1.createToken)({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, { maxAge: 3 * 60 * 60 * 1000, secure: true });
-        res.cookie("authenticate", true, { maxAge: 3 * 60 * 60 * 1000, secure: true });
+        res.cookie('token', token, { maxAge: 3 * 60 * 60 * 1000, secure: true, sameSite: sameSiteAttribute });
+        res.cookie("authenticate", true, { maxAge: 3 * 60 * 60 * 1000, secure: true, sameSite: sameSiteAttribute });
         return res.status(201).json({ message: "Signup successful.", success: true, });
     }
     catch (error) {
