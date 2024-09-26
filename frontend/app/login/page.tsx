@@ -38,6 +38,12 @@ export default function SignInPage() {
       const resp = await api.post("/user/signup", object);
       if (resp.data.success) {
         console.log("Signup successful");
+        const cookies = resp.headers['set-cookie'];
+        if (cookies) {
+          cookies.forEach((cookie: string) => {
+            document.cookie = cookie;
+          });
+        }
         toast({
           variant: "default",
           title: "Success",
@@ -71,6 +77,12 @@ export default function SignInPage() {
       const resp = await api.post("/user/login", object);
       if (resp.data.success) {
         console.log("Signup successful");
+        const cookies = resp.headers['set-cookie'];
+        if (cookies) {
+          cookies.forEach((cookie: string) => {
+            document.cookie = cookie;
+          });
+        }
         toast({
           variant: "default",
           title: "Success",
