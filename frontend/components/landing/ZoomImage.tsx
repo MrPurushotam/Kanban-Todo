@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useRef, MouseEvent } from 'react';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
+import React, { useState, useRef, MouseEvent } from 'react';
 import Image from 'next/image';
 interface ZoomableImageProps{
     src:string;
@@ -11,11 +9,10 @@ interface ZoomableImageProps{
 const ZoomableImage = ({ src, alt, width, height }:ZoomableImageProps) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const imageRef = useRef(null);
+  const imageRef = useRef<HTMLDivElement | null>(null);
 
   const handleMouseMove = (e:MouseEvent) => {
     if (!imageRef.current) return;
-    // @ts-expect-error
     const { left, top, width, height } = imageRef.current.getBoundingClientRect();
     const x = (e.pageX - left) / width * 100;
     const y = (e.pageY - top) / height * 100;
@@ -24,7 +21,7 @@ const ZoomableImage = ({ src, alt, width, height }:ZoomableImageProps) => {
 
   return (
     <div 
-      className="relative overflow-hidden rounded-lg shadow-lg cursor-zoom-in"
+      className="relative overflow-hidden rounded-lg shadow-lg cursor-zoom-in w-full"
       style={{ width, height }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsZoomed(true)}

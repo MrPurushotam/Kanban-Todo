@@ -22,9 +22,6 @@ export const useLogout = () => {
                 resetIsAuthenticated();
                 
                 router.push("/login/");
-                document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                document.cookie = "authenticate=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
                 console.log("Logged out successfully");
                 toast({
                     variant: "default",

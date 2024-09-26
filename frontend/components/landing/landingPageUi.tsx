@@ -24,7 +24,7 @@ const LandingPage = () => {
         <p className="text-xl md:text-2xl text-gray-700">Organize your tasks, boost your productivity</p>
       </motion.div>
 
-      <div className="flex flex-col md:flex-row justify-center items-center space-y-8 md:space-y-0 md:space-x-8">
+      <div className="flex flex-col md:flex-row justify-center items-center space-y-8 md:space-y-0 md:space-x-8 w-full">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: isVisible ? 1 : 0, x: isVisible ? 0 : -50 }}
@@ -73,7 +73,7 @@ const LandingPage = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
         transition={{ duration: 0.8, delay: 0.6 }}
-        className="mt-12"
+        className="mt-12 w-full overflow-hidden mx-auto px-4 sm:px-6 lg:px-8"
       >
         <ZoomableImage
           src="/image.png"
@@ -84,6 +84,7 @@ const LandingPage = () => {
       </motion.div>
     </div>
   );
+   
 };
 
 export default LandingPage;

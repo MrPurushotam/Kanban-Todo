@@ -29,83 +29,95 @@ export default function SignInPage() {
   const handleSignup = async (e: any) => {
     e.preventDefault();
     try {
-      const object = {
-        email: formData.email,
-        password: formData.password,
-        username: formData.username,
-        name: formData.name
-      }
-      const resp = await api.post("/user/signup", object);
-      if (resp.data.success) {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/user/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+        }),
+      });
+
+      const respData = await response.json();
+
+      if (respData.success) {
         console.log("Signup successful");
-        const cookies = resp.headers['set-cookie'];
+        const cookies = response.headers.get('set-cookie');
         if (cookies) {
-          cookies.forEach((cookie: string) => {
-            document.cookie = cookie;
-          });
+          document.cookie = cookies; 
         }
         toast({
           variant: "default",
           title: "Success",
-          description: "User Created.Redirecting..."
+          description: "User Created. Redirecting...",
         });
-        router.push("/dashboard/")
+        router.push("/dashboard/");
       } else {
-        console.log("Error ", resp.data.error)
+        console.log("Error: ", respData.error);
         toast({
           variant: "default",
-          description: "Could not signup some error occured" + resp.data.error
+          description: "Could not sign up, an error occurred: " + respData.error,
         });
       }
     } catch (error: any) {
-      console.log("Error occured while input ", error.message)
+      console.log("Error occurred: ", error.message);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: error.message,
       });
     }
-  }
-
+  };
   const handleSignin = async (e: any) => {
     e.preventDefault();
     try {
-      const object = {
-        email: formData.email,
-        password: formData.password,
-      }
-      const resp = await api.post("/user/login", object);
-      if (resp.data.success) {
-        console.log("Signup successful");
-        const cookies = resp.headers['set-cookie'];
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/user/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',  // Ensure cookies are included in the request
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const respData = await response.json();
+
+      if (respData.success) {
+        console.log("Login successful");
+        const cookies = response.headers.get('set-cookie');
         if (cookies) {
-          cookies.forEach((cookie: string) => {
-            document.cookie = cookie;
-          });
+          document.cookie = cookies;  // Manually set cookies in client
         }
         toast({
           variant: "default",
           title: "Success",
-          description: "Loggedin,Redirecting..."
+          description: "Logged in. Redirecting...",
         });
-        router.push("/dashboard/")
+        router.push("/dashboard/");
       } else {
-        console.log("Error ", resp.data.error)
+        console.log("Error: ", respData.error);
         toast({
           variant: "default",
-          description: "Could not login some error occured" + resp.data.error
+          description: "Could not log in, an error occurred: " + respData.error,
         });
       }
     } catch (error: any) {
-      console.log("Error occured while input ", error.message)
+      console.log("Error occurred: ", error.message);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: error.message,
       });
     }
-  }
-
+  };
   return (
     <div className="flex h-screen bg-gradient-to-br from-blue-100 to-teal-100">
       {/* Left side with app preview */}
