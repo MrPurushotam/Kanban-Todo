@@ -44,6 +44,7 @@ export default function SignInPage() {
       });
 
       const respData = await response.json();
+      console.log(respData);
 
       if (respData.success) {
         console.log("Signup successful");
@@ -89,7 +90,7 @@ export default function SignInPage() {
       });
 
       const respData = await response.json();
-
+      console.log(respData);
       if (respData.success) {
         console.log("Login successful");
         const cookies = response.headers.get('set-cookie');
