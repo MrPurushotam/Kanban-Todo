@@ -17,7 +17,7 @@ const verifyToken = (token) => {
     }
     catch (error) {
         console.log("Error occured ", error.message);
-        if (error.name = "TokenExpiredError") {
+        if (error.name === "TokenExpiredError") {
             return { success: false, jwtExpire: true };
         }
         return { success: false };

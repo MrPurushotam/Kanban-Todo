@@ -13,7 +13,6 @@ const useLoggedUser = () => {
     if (userDetailsLoadable.state === 'hasValue') {
       setLoggedUser(userDetailsLoadable.contents as User);
     } else if (userDetailsLoadable.state === 'hasError') {
-      console.error('Error loading user details:', userDetailsLoadable.contents);
       setLoggedUser(null);
     }
     else if(String(userDetailsLoadable.state)==="Jwt Expired"){

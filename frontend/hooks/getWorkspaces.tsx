@@ -7,7 +7,6 @@ import { Workspace } from '@/types/todo';
 const getWorkspaces = () => {
   const setWorkspaces= useSetRecoilState<Workspace[]>(workspaceAtom);
   const workspacesLoadable = useRecoilValueLoadable(workspaceSelector);
-
   useEffect(() => {
     if (workspacesLoadable.state === 'hasValue') {
       setWorkspaces(workspacesLoadable.contents as Workspace[]);

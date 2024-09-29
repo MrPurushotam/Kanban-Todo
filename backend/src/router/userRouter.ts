@@ -8,7 +8,6 @@ import { signupSchema } from "../schema/signupSchema";
 import "dotenv/config"
 const router = Router();
 // @ts-epect-error
-const sameSiteAttribute: "lax" | "none" | "strict" = (process.env.SAME_SITE as "lax" | "none" | "strict") || "none";
 
 router.post("/login", async (req: Request, res: Response) => {
     const { success, error, data } = signinSchema.safeParse(req.body);
@@ -29,22 +28,7 @@ router.post("/login", async (req: Request, res: Response) => {
         }
         const userWithId = user.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, {
-            maxAge: 3 * 24 * 60 * 60 * 1000,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: sameSiteAttribute,
-            httpOnly: false,
-            domain: process.env.COOKIE_DOMAIN,
-          });
-      
-          res.cookie("authenticate", true, {
-            maxAge: 3 * 24 * 60 * 60 * 1000,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: sameSiteAttribute,
-            httpOnly:false,
-            domain: process.env.COOKIE_DOMAIN 
-          });
-        res.status(200).json({ success: true, message: "Login successful" });
+        res.status(200).json({ success: true, message: "Login successful" ,token});
     } catch (error: any) {
         console.log("Error occured while signin in.", error.message)
         return res.status(500).json({ success: false, messsage: "Internal error", error: error.message });
@@ -75,22 +59,7 @@ router.post("/signup", async (req: Request, res: Response) => {
         await newUser.save();
         const userWithId = newUser.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, {
-            maxAge: 3 * 24 * 60 * 60 * 1000,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: sameSiteAttribute,
-            httpOnly:false,
-            domain: process.env.COOKIE_DOMAIN ,
-          });
-      
-          res.cookie("authenticate", true, {
-            maxAge: 3 * 24 * 60 * 60 * 1000,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: sameSiteAttribute,
-            httpOnly: false,
-            domain: process.env.COOKIE_DOMAIN
-          });
-        return res.status(201).json({ message: "Signup successful.", success: true, });
+        return res.status(201).json({ message: "Signup successful.", success: true, token });
     } catch (error: any) {
         console.error("Error during signup:", error?.message);
         return res.status(500).json({ message: "Internal server error.", error: error.message, success: false });
@@ -98,9 +67,7 @@ router.post("/signup", async (req: Request, res: Response) => {
 });
 
 router.get("/logout", (req: Request, res: Response) => {
-    res.clearCookie('token', { domain: process.env.COOKIE_DOMAIN , sameSite: 'none', secure: process.env.NODE_ENV === 'production' });
-    res.clearCookie('authenticate', { domain: process.env.COOKIE_DOMAIN, sameSite: 'none', secure: process.env.NODE_ENV === 'production' });
-    return res.status(200).json({ success: true, message: "Logged out successfully" });
+    return res.status(200).json({ success: true, message: "Logged out successfully" ,token:null});
 });
 router.get("/", authenticate, (req: Request, res: Response) => {
     // @ts-ignore

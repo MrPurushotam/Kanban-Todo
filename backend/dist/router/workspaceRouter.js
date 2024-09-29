@@ -71,7 +71,6 @@ router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // @ts-ignore
         const id = req.userId;
         // @ts-ignore
-        console.log(req.userId);
         if (!id) {
             return res.status(401).json({ success: false, error: "UserId cannot be null" });
         }

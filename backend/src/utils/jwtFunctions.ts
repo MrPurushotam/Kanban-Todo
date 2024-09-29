@@ -11,7 +11,7 @@ export const verifyToken=(token:string)=>{
         return {success:true, ...data}
     } catch (error:any) {
         console.log("Error occured ",error.message);
-        if(error.name="TokenExpiredError"){
+        if(error.name==="TokenExpiredError"){
             return {success:false, jwtExpire:true}
         }
         return {success:false}

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EyeIcon, EyeOffIcon, ListIcon, Kanban } from 'lucide-react'
+import { EyeIcon, EyeOffIcon, ListIcon, Kanban , LoaderCircle } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
@@ -19,6 +19,7 @@ export default function SignInPage() {
     username: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false); 
   const router = useRouter();
   const { toast }= useToast();
   const handleInputChange = (e: any) => {
@@ -36,7 +37,7 @@ export default function SignInPage() {
       });
       return;
     }
-
+    setLoading(true);
     try {
       const object = {
         email: formData.email,
@@ -47,6 +48,8 @@ export default function SignInPage() {
       const resp = await api.post("/user/signup", object);
       if (resp.data.success) {
         console.log("Signup successful");
+        window.localStorage.setItem("token",resp.data.token);
+        window.localStorage.setItem("authenticate","true");
         toast({
           variant: "default",
           title: "Success",
@@ -65,8 +68,10 @@ export default function SignInPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: "Network Error try again."
       });
+    }finally {
+      setLoading(false);
     }
   }
 
@@ -80,6 +85,7 @@ export default function SignInPage() {
       });
       return;
     }
+    setLoading(true);
     try {
       const object = {
         email: formData.email,
@@ -88,6 +94,8 @@ export default function SignInPage() {
       const resp = await api.post("/user/login", object);
       if (resp.data.success) {
         console.log("Signup successful");
+        window.localStorage.setItem("token",resp.data.token);
+        window.localStorage.setItem("authenticate","true");
         toast({
           variant: "default",
           title: "Success",
@@ -106,8 +114,10 @@ export default function SignInPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message
+        description: "Network Error try again."
       });
+    }finally {
+      setLoading(false);
     }
   }
 
@@ -192,7 +202,9 @@ export default function SignInPage() {
                       </button>
                     </div>
                   </div>
-                  <Button className="w-full">Sign In</Button>
+                  <Button className="w-full" disabled={loading}>
+                    {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "Sign In"}
+                  </Button>
                 </form>
               </TabsContent>
               <TabsContent value="signup">
@@ -246,7 +258,9 @@ export default function SignInPage() {
                       </button>
                     </div>
                   </div>
-                  <Button className="w-full">Sign Up</Button>
+                  <Button className="w-full" disabled={loading}>
+                    {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "Sign Up"}
+                  </Button>
                 </form>
               </TabsContent>
             </Tabs>

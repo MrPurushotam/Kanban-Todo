@@ -9,7 +9,7 @@ export const userDetailsAtom= atom<User | null>({
 
 export const isAuthenticatedAtom= atom<boolean>({
     key:"isAuthenticated",
-    default:false
+    default:false, 
 })
 
 // TODO: Add a way such that initially when dashboard is opened automatically workspaces are fetched could go with selector or useEffects

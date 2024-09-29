@@ -60,7 +60,6 @@ router.get("/",async(req:Request,res:Response)=>{
         // @ts-ignore
         const id= req.userId as string;
         // @ts-ignore
-        console.log(req.userId as string)
         if(!id){
             return res.status(401).json({success:false,error:"UserId cannot be null"});
         }

@@ -20,7 +20,7 @@ export const useLogout = () => {
                 resetWorkspace();
                 resetUserDetails();
                 resetIsAuthenticated();
-                
+                window.localStorage.clear();
                 router.push("/login/");
                 console.log("Logged out successfully");
                 toast({

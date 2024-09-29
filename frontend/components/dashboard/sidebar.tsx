@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { Menu, Briefcase, LogOut, Plus, MoreVertical } from "lucide-react";
+import { Menu, Briefcase, LogOut, Plus, MoreVertical , LoaderCircle } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -16,6 +16,8 @@ import WorkspaceForm from './WorkspaceForm';
 import { api } from '@/lib/api';
 import { useLogout } from '@/hooks/useLogoutUser';
 import { useToast } from '@/hooks/use-toast';
+import useLoggedUser from '@/hooks/useLoggedUser';
+import getWorkspaces from '@/hooks/getWorkspaces';
 
 
 const Sidebar = () => {
@@ -28,6 +30,9 @@ const Sidebar = () => {
   const [editWorkspace, setEditWorkspace] = useState<Workspace | null>(null);
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev)
   const { toast } = useToast();
+  const [loading,setLoading]=useState<"logout"|"">("");
+  useLoggedUser();
+  getWorkspaces();
 
   const handleWorkspaceClick = (workspaceId: string) => {
     router.push(`/dashboard/${workspaceId}`);
@@ -127,9 +132,15 @@ const Sidebar = () => {
       </div>
       <Separator />
       <div className="p-4 bottom-1 w-full">
-        <Button variant="ghost" className={`flex ${isSidebarOpen ? "justify-start" : "w-fit justify-start items-center text-center text-2xl"}`} onClick={logout}>
-          <LogOut className="mr-2 h-4 w-4 text-red-500" />
-          {isSidebarOpen && "Logout"}
+        <Button variant="ghost" className={`flex ${isSidebarOpen ? "justify-start" : "w-fit justify-start items-center text-center text-2xl"}`} 
+        onClick={()=>{
+          setLoading("logout");
+          logout()
+          setLoading("");
+        }}
+        disabled={loading==="logout"}
+        >
+          {loading==="logout"?<LoaderCircle className="animate-spin mx-auto" />: <><LogOut className="mr-2 h-4 w-4 text-red-500" /> {isSidebarOpen && "Logout"}</>}
         </Button>
       </div>
     </div>
