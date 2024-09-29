@@ -29,8 +29,21 @@ router.post("/login", async (req: Request, res: Response) => {
         }
         const userWithId = user.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, {maxAge: 3 * 60 * 60 * 1000,secure: true ,sameSite:sameSiteAttribute});
-        res.cookie("authenticate", true, { maxAge: 3 * 60 * 60 * 1000,secure: true ,sameSite:sameSiteAttribute});
+        res.cookie('token', token, {
+            maxAge: 3 * 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: sameSiteAttribute,
+            httpOnly: false,
+            domain: process.env.COOKIE_DOMAIN,
+          });
+      
+          res.cookie("authenticate", true, {
+            maxAge: 3 * 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: sameSiteAttribute,
+            httpOnly:false,
+            domain: process.env.COOKIE_DOMAIN 
+          });
         res.status(200).json({ success: true, message: "Login successful" });
     } catch (error: any) {
         console.log("Error occured while signin in.", error.message)
@@ -62,8 +75,21 @@ router.post("/signup", async (req: Request, res: Response) => {
         await newUser.save();
         const userWithId = newUser.toJSON();
         const token = createToken({ userId: userWithId.id, username: userWithId.username, email: userWithId.email });
-        res.cookie('token', token, {maxAge: 3 * 60 * 60 * 1000,secure: true ,sameSite:sameSiteAttribute});
-        res.cookie("authenticate", true, { maxAge: 3 * 60 * 60 * 1000,secure: true ,sameSite:sameSiteAttribute});
+        res.cookie('token', token, {
+            maxAge: 3 * 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: sameSiteAttribute,
+            httpOnly:false,
+            domain: process.env.COOKIE_DOMAIN ,
+          });
+      
+          res.cookie("authenticate", true, {
+            maxAge: 3 * 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: sameSiteAttribute,
+            httpOnly: false,
+            domain: process.env.COOKIE_DOMAIN
+          });
         return res.status(201).json({ message: "Signup successful.", success: true, });
     } catch (error: any) {
         console.error("Error during signup:", error?.message);
@@ -72,8 +98,8 @@ router.post("/signup", async (req: Request, res: Response) => {
 });
 
 router.get("/logout", (req: Request, res: Response) => {
-    res.clearCookie('token');
-    res.clearCookie("authenticate");
+    res.clearCookie('token', { domain: process.env.COOKIE_DOMAIN , sameSite: 'none', secure: process.env.NODE_ENV === 'production' });
+    res.clearCookie('authenticate', { domain: process.env.COOKIE_DOMAIN, sameSite: 'none', secure: process.env.NODE_ENV === 'production' });
     return res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 router.get("/", authenticate, (req: Request, res: Response) => {

@@ -21,7 +21,7 @@ const ZoomableImage = ({ src, alt, width, height }:ZoomableImageProps) => {
 
   return (
     <div 
-      className="relative overflow-hidden rounded-lg shadow-lg cursor-zoom-in w-full"
+      className="relative overflow-hidden rounded-lg shadow-lg cursor-zoom-in w-full mx-auto"
       style={{ width, height }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsZoomed(true)}
