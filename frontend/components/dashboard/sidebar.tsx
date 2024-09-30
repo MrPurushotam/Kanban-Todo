@@ -16,9 +16,6 @@ import WorkspaceForm from './WorkspaceForm';
 import { api } from '@/lib/api';
 import { useLogout } from '@/hooks/useLogoutUser';
 import { useToast } from '@/hooks/use-toast';
-import useLoggedUser from '@/hooks/useLoggedUser';
-import getWorkspaces from '@/hooks/getWorkspaces';
-
 
 const Sidebar = () => {
   const logout = useLogout();
@@ -31,8 +28,6 @@ const Sidebar = () => {
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev)
   const { toast } = useToast();
   const [loading,setLoading]=useState<"logout"|"">("");
-  useLoggedUser();
-  getWorkspaces();
 
   const handleWorkspaceClick = (workspaceId: string) => {
     router.push(`/dashboard/${workspaceId}`);
@@ -104,7 +99,7 @@ const Sidebar = () => {
             <Plus className="h-4 w-4" />
           </Button>}
         </div>
-        <div className="space-y-1 flex flex-col overflow-y-auto">
+        <div className="space-y-1 flex flex-col overflow-y-auto ">
           {isSidebarOpen && workspaces?.map((workspace) => (
             <div className='flex justify-between items-center' key={workspace.id}>
               <Button
@@ -128,6 +123,9 @@ const Sidebar = () => {
               </DropdownMenu>
             </div>
           ))}
+          {isSidebarOpen && workspaces?.length<1 && 
+              <p className='text-center break-words text-base shadow-sm font-semibold text-red-800 my-5 mx-auto'>You don't have any workspace. Create one</p>
+          }
         </div>
       </div>
       <Separator />

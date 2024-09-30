@@ -1,8 +1,8 @@
 "use client"
 import { api } from '@/lib/api';
-import { userDetailsAtom,isAuthenticatedAtom,workspaceAtom,todosAtom } from '@/states/atoms';
+import { userDetailsAtom,isAuthenticatedAtom,workspaceAtom,todosAtom, fetchUserAtom, workspaceSelector } from '@/states/atoms';
 import { useCallback } from 'react';
-import { useResetRecoilState } from 'recoil';
+import { useRecoilRefresher_UNSTABLE, useResetRecoilState } from 'recoil';
 import { useRouter } from 'next/navigation';
 import { useToast } from './use-toast';
 export const useLogout = () => {
@@ -10,6 +10,8 @@ export const useLogout = () => {
     const resetIsAuthenticated=useResetRecoilState(isAuthenticatedAtom);
     const resetWorkspace=useResetRecoilState(workspaceAtom);
     const resetTodos=useResetRecoilState(todosAtom);
+    const refreshWorkspaceSelector = useRecoilRefresher_UNSTABLE(workspaceSelector);
+    const refreshFetchUserSelector = useRecoilRefresher_UNSTABLE(fetchUserAtom);
     const router= useRouter();
     const { toast } = useToast();
     const logout = useCallback(async () => {
@@ -21,6 +23,9 @@ export const useLogout = () => {
                 resetUserDetails();
                 resetIsAuthenticated();
                 window.localStorage.clear();
+                refreshWorkspaceSelector();
+                refreshFetchUserSelector();
+
                 router.push("/login/");
                 console.log("Logged out successfully");
                 toast({

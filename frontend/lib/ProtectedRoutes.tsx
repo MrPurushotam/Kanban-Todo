@@ -9,8 +9,8 @@ import getWorkspaces from '@/hooks/getWorkspaces';
 const ProtectedRoutes = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const router = useRouter();
   const setAuthenticate=useSetRecoilState(isAuthenticatedAtom);
-  useLoggedUser();
-  getWorkspaces();
+  const user = useLoggedUser();
+  const workspace = getWorkspaces();
 
   useEffect(() => {
     const authenticate = localStorage.getItem('authenticate');
@@ -18,10 +18,12 @@ const ProtectedRoutes = ({ children }: Readonly<{ children: React.ReactNode }>) 
     if (!authenticate && !token) {
       router.push('/login');
     } else {
+      user
+      workspace 
       setAuthenticate(typeof window !== 'undefined' ? !!localStorage.getItem('token') : false);
       router.push('/dashboard');
     }
-  }, [router]);
+  }, [router,setAuthenticate,user,workspace]);
   
   return (
     <>

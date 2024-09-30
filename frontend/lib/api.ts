@@ -1,16 +1,21 @@
-"use client"
+"use client";
 import axios from "axios";
 
-const createApi = () => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null; // Check if window is defined
+export const api = axios.create({
+  baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
+  withCredentials: true,
+});
 
-  return axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
-    withCredentials: true,
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  });
-};
+api.interceptors.request.use((config) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
-export const api = createApi();
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete config.headers["Authorization"];
+  }
+  
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});

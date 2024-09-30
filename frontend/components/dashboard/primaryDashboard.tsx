@@ -1,13 +1,13 @@
 "use client"
 
 import { workspaceAtom } from '@/states/atoms'
-import React, {  useState } from 'react'
-import { useRecoilState} from 'recoil'
+import React, { useState } from 'react'
+import { useRecoilState } from 'recoil'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
 import { Workspace } from '@/types/todo'
-import { Briefcase, MoreVertical } from 'lucide-react'
+import { Briefcase, MoreVertical, Plus } from 'lucide-react'
 import WorkspaceForm from './WorkspaceForm'
 import { api } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
@@ -27,6 +27,10 @@ const PrimaryDashboard = () => {
         setEditWorkspace(workspace);
         setIsFormOpen(true);
     };
+    
+  const openCreateForm = () => {
+    setIsFormOpen(true);
+  };
 
     const deleteWorkspace = async (id: string) => {
         try {
@@ -61,7 +65,14 @@ const PrimaryDashboard = () => {
 
     return (
         <div className='w-3/4 mx-auto p-2 rounded-md space-y-3 mt-7 h-full'>
-            <h2 className='text-2xl font-semibold tracking-wide text-gray-900'>You Workspaces</h2>
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-semibold text-gray-900 tracking-wide">Your Workspaces</h2>
+                <Button onClick={openCreateForm} className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Create Workspace
+                </Button>
+            </div>
+
             <div className="space-y-1 flex flex-col overflow-y-auto">
                 {workspaces?.map((workspace) => (
                     <div className='flex justify-between items-center' key={workspace.id}>
@@ -88,7 +99,7 @@ const PrimaryDashboard = () => {
                 ))}
                 {
                     workspaces?.length < 1 &&
-                    <div className="flex gap-2 w-full p-4 rounded-sm shadow-sm">
+                    <div className="flex gap-2 w-full p-4 rounded-sm shadow-sm ">
                         <div className="w-1/2">
                             <img src={"https://png.pngtree.com/png-vector/20220513/ourmid/pngtree-oops-comic-bubble-sound-text-png-image_4574095.png"} alt="oops!" className='text-center aspect-[3/2] w-70 h-50 object-cover' />
                         </div>

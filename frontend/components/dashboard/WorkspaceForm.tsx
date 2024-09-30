@@ -43,7 +43,7 @@ const WorkspaceForm: React.FC<WorkspaceFormProps> = ({ currentWorkspace, isUpdat
                             title:"Success",
                             description:"Updated workspace."
                           });
-                          setWorkspaces(prev=>prev.filter(workspace=>(workspace.id===currentWorkspace?.id)?{...workspace,name:resp.data.Workspace.name}:workspace))
+                          setWorkspaces(prev=>prev.map(workspace=>(workspace.id===currentWorkspace?.id)?{...workspace,name:resp.data.Workspace.name}:workspace))
                     }else{
                         toast({
                             variant:"default",

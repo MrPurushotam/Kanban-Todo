@@ -116,8 +116,6 @@ const PrimaryWindow = ({ params }: { params: { workspaceId: string } }) => {
           </div>
         </div>
       </div>
-      {/* TODO: add a way to let user choose between list view and kanban view choose any of it will change the ui and render different page thing */}
-      {/* TODO: create a list view which shall display all todos in list */}
       {loading ? (
         <div>Loading...</div>
       ) : (
