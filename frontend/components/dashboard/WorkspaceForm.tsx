@@ -22,6 +22,21 @@ const WorkspaceForm: React.FC<WorkspaceFormProps> = ({ currentWorkspace, isUpdat
     const [isSubmitting, setIsSubmitting] = useState(false)
     const setWorkspaces=useSetRecoilState(workspaceAtom)
     const { toast } = useToast();
+    const maxLength = 69
+    const workspaceRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(()=>{
+        document.addEventListener('click', handleOutsideClick);
+        return () => {
+            document.removeEventListener('click', handleOutsideClick);
+        }
+    })
+
+    const handleOutsideClick=(e: MouseEvent)=>{
+        if(workspaceRef.current && !workspaceRef.current.contains(e.target as Node)){
+            onCancel();
+        }
+    }
 
     useEffect(()=>{
         if(isUpdating && currentWorkspace?.id){
@@ -86,7 +101,7 @@ const WorkspaceForm: React.FC<WorkspaceFormProps> = ({ currentWorkspace, isUpdat
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96" ref={workspaceRef}>
                 <h2 className="text-xl font-semibold mb-4">
                     {currentWorkspace?.name.trim() ? 'Edit Workspace' : 'Create Workspace'}
                 </h2>
@@ -98,7 +113,11 @@ const WorkspaceForm: React.FC<WorkspaceFormProps> = ({ currentWorkspace, isUpdat
                             value={workspaceName}
                             onChange={(e) => setWorkspaceName(e.target.value)}
                             placeholder="Enter workspace name"
+                            maxLength={maxLength}
                         />
+                        <div className="text-xs text-gray-500 text-right mt-1">
+                            {workspaceName.length}/{maxLength}
+                        </div>
                     </div>
                     <div className="flex justify-end space-x-2">
                         <Button type="button" variant="outline" onClick={onCancel}>

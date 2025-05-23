@@ -5,6 +5,7 @@ export interface Workspace extends Document {
     todos: mongoose.Types.ObjectId[];
     createdAt: Date;
     userId: mongoose.Types.ObjectId;
+    createdBy: "User"|"Ai";
 }
 
 const workspaceSchema: Schema<Workspace> = new mongoose.Schema(
@@ -12,7 +13,7 @@ const workspaceSchema: Schema<Workspace> = new mongoose.Schema(
         name: {
             type: String,
             required: [true, "Name is required."],
-            unique: true, // Keep it unique globally, or remove this if uniqueness is user-specific
+            unique: true,
             trim: true,
         },
         userId: {
@@ -27,7 +28,12 @@ const workspaceSchema: Schema<Workspace> = new mongoose.Schema(
         todos: {
             type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Todo" }],
             default: [],
-        },
+        },createdBy: {
+            type: String,
+            required: [true, "Created by is required."],
+            default: "User",
+            enum: ["User", "Ai"]
+        }   
     },
     {
         timestamps: true,

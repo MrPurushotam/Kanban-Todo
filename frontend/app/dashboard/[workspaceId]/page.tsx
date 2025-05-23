@@ -82,9 +82,17 @@ const PrimaryWindow = ({ params }: { params: { workspaceId: string } }) => {
             </Button>}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                  title={`Switch view mode (${viewType === 'list' ? 'List' : 'Kanban'})`}
+                >
                   {viewType === 'list' ? <ListIcon className="h-4 w-4" /> : <LayoutPanelTopIcon className="h-4 w-4" />}
-                  <span>{viewType === 'list' ? 'List' : 'Kanban'}</span>
+                  <span>
+                    {viewType === 'list' ? 'List' : 'Kanban'}
+                    <span className="ml-1 text-xs text-muted-foreground">(View Mode)</span>
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

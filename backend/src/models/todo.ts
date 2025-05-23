@@ -7,6 +7,7 @@ export interface Todo extends Document {
     priority: "Low" | "Medium" | "High";
     dueDate?: Date;
     workspaceId: mongoose.Types.ObjectId;
+    createdBy?: "User" | "AI";
 }
 
 const todoSchema: Schema<Todo> = new mongoose.Schema(
@@ -38,14 +39,19 @@ const todoSchema: Schema<Todo> = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: "Workspace",
             required: true,
-        },
+        }, createdBy: {
+            type: String,
+            required: [true, "Created by is required."],
+            default: "User",
+            enum: ["User", "Ai"],
+        }
     },
     {
         timestamps: true,
         toJSON: {
             transform: (doc, ret) => {
-                ret.id = ret._id;  
-                delete ret._id;    
+                ret.id = ret._id;
+                delete ret._id;
                 delete ret.__v;
                 return ret;
             },

@@ -113,7 +113,7 @@ const ListView = ({ workspaceId, sort }: listViewProps) => {
                     </div>
                     <div className="w-1/2 h-50 flex items-center">
                         <SquareCheckBig className="w-8 h-8 text-sky-300" />
-                        <h2 className=' break-words text-xl font-semibold text-gray-80'>Yoou have no todso in this id. Createee it asap!!!</h2>
+                        <h2 className=' break-words text-xl font-semibold text-gray-80'>You have a blank workspace. Create tasks now!</h2>
                     </div>
                 </div>
             }

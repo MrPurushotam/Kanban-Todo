@@ -20,11 +20,46 @@ export default function PrimaryLogin() {
     password: '',
   });
   const [loading, setLoading] = useState(false); 
+  const [signupUsernameError, setSignupUsernameError] = useState<string | null>(null);
+  const [signupNameError, setSignupNameError] = useState<string | null>(null);
+  const [signupEmailError, setSignupEmailError] = useState<string | null>(null);
+  const [signupPasswordError, setSignupPasswordError] = useState<string | null>(null);
   const router = useRouter();
   const { toast }= useToast();
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    if (name === "username") {
+      if (value.length > 0 && value.length < 6) {
+        setSignupUsernameError("Username must be at least 6 characters.");
+      } else {
+        setSignupUsernameError(null);
+      }
+    }
+    if (name === "name") {
+      if (value.length > 0 && value.length < 6) {
+        setSignupNameError("Full name must be at least 6 characters.");
+      } else {
+        setSignupNameError(null);
+      }
+    }
+    if (name === "email") {
+      // Simple email regex for visible check
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value.length > 0 && !emailRegex.test(value)) {
+        setSignupEmailError("Please enter a valid email address.");
+      } else {
+        setSignupEmailError(null);
+      }
+    }
+    if (name === "password") {
+      if (value.length > 0 && (value.length < 6 || value.length > 16)) {
+        setSignupPasswordError("Password must be 6-16 characters.");
+      } else {
+        setSignupPasswordError(null);
+      }
+    }
   };
 
   useEffect(()=>{
@@ -37,14 +72,39 @@ export default function PrimaryLogin() {
 
   const handleSignup = async (e: any) => {
     e.preventDefault();
-    if (!formData.email || !formData.password || !formData.username || !formData.name) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "All fields are required for signup.",
-      });
-      return;
+    let hasError = false;
+    if (!formData.name) {
+      setSignupNameError("Full name is required.");
+      hasError = true;
+    } else if (formData.name.length < 6) {
+      setSignupNameError("Full name must be at least 6 characters.");
+      hasError = true;
     }
+    if (!formData.email) {
+      setSignupEmailError("Email is required.");
+      hasError = true;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setSignupEmailError("Please enter a valid email address.");
+        hasError = true;
+      }
+    }
+    if (!formData.username) {
+      setSignupUsernameError("Username is required.");
+      hasError = true;
+    } else if (formData.username.length < 6) {
+      setSignupUsernameError("Username must be at least 6 characters.");
+      hasError = true;
+    }
+    if (!formData.password) {
+      setSignupPasswordError("Password is required.");
+      hasError = true;
+    } else if (formData.password.length < 6 || formData.password.length > 16) {
+      setSignupPasswordError("Password must be 6-16 characters.");
+      hasError = true;
+    }
+    if (hasError) return;
     setLoading(true);
     try {
       const object = {
@@ -225,7 +285,11 @@ export default function PrimaryLogin() {
                       type="text"
                       placeholder="Enter your name"
                       onChange={handleInputChange}
+                      value={formData.name}
                     />
+                    {signupNameError && (
+                      <p className="text-red-500 text-xs mt-1">{signupNameError}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
@@ -235,7 +299,11 @@ export default function PrimaryLogin() {
                       type="email"
                       placeholder="Enter your email"
                       onChange={handleInputChange}
+                      value={formData.email}
                     />
+                    {signupEmailError && (
+                      <p className="text-red-500 text-xs mt-1">{signupEmailError}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-username">Username</Label>
@@ -245,7 +313,11 @@ export default function PrimaryLogin() {
                       type="text"
                       placeholder="Choose a username"
                       onChange={handleInputChange}
+                      value={formData.username}
                     />
+                    {signupUsernameError && (
+                      <p className="text-red-500 text-xs mt-1">{signupUsernameError}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
@@ -256,6 +328,7 @@ export default function PrimaryLogin() {
                         type={showPassword ? "text" : "password"}
                         placeholder="Create a password"
                         onChange={handleInputChange}
+                        value={formData.password}
                       />
                       <button
                         type="button"
@@ -265,6 +338,9 @@ export default function PrimaryLogin() {
                         {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                       </button>
                     </div>
+                    {signupPasswordError && (
+                      <p className="text-red-500 text-xs mt-1">{signupPasswordError}</p>
+                    )}
                   </div>
                   <Button className="w-full" disabled={loading}>
                     {loading ? <LoaderCircle className="animate-spin mx-auto" /> : "Sign Up"}

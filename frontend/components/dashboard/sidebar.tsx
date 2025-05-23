@@ -77,8 +77,8 @@ const Sidebar = () => {
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-4">
-          <Avatar>
-            <AvatarFallback onClick={() => !isSidebarOpen && toggleSidebar()}>{loggedUser?.username.charAt(0) || "D"}</AvatarFallback>
+          <Avatar onClick={()=>router.push("/dashboard")}>
+            <AvatarFallback onClick={() => !isSidebarOpen && toggleSidebar()}>{loggedUser?.username.charAt(0).toUpperCase() || "D"}</AvatarFallback>
           </Avatar>
           {isSidebarOpen && (
             <div>

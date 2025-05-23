@@ -66,3 +66,48 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+@keyframes borderMove {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.moving-border {
+  position: relative;
+  z-index: 0;
+  overflow: visible;
+}
+
+.moving-border span {
+  pointer-events: none;
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: 0.4rem;
+  padding: 4px;
+  background: linear-gradient(270deg,
+      #00ffe7,
+      #ff00ea,
+      #ffe600,
+      /* Bright Yellow */
+      #00ff85,
+      /* Neon Green */
+      #ff6b00,
+      /* Bright Orange */
+      #00ffe7
+      /* Neon Cyan again for smooth loop */
+    );
+  background-size: 600% 600%;
+  animation: borderMove 3s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
