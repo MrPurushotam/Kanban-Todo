@@ -31,6 +31,10 @@ app.use("/api/v1/todo", todoRouter)
 app.use("/api/v1/workspace", workspaceRouter)
 app.use("/api/v1/ai", aiRouter)
 
-app.listen(PORT, () => {
-    console.log("Server running on ", PORT)
-})
+if (process.env.NODE_ENV === "development") {
+    app.listen(PORT, () => {
+        console.log("Server running on ", PORT)
+    })
+}
+
+export default app;
