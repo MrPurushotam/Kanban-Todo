@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon dist/index.js",
-    "build": "tsc -b"
+    "build": "tsc"
   },
   "author": "Purushotam",
   "license": "ISC",
