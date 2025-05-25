@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
-import { Menu, Briefcase, LogOut, Plus, MoreVertical , LoaderCircle } from "lucide-react";
+import { Menu, Briefcase, LogOut, Plus, MoreVertical, LoaderCircle } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -27,7 +27,35 @@ const Sidebar = () => {
   const [editWorkspace, setEditWorkspace] = useState<Workspace | null>(null);
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev)
   const { toast } = useToast();
-  const [loading,setLoading]=useState<"logout"|"">("");
+  const [loading, setLoading] = useState<"logout" | "">("");
+  const [workspacesLoading, setWorkspacesLoading] = useState(true);
+
+  // Add effect to simulate/handle initial workspace loading
+  useEffect(() => {
+    const fetchWorkspaces = async () => {
+      try {
+        setWorkspacesLoading(true);
+        // If you already have a mechanism to fetch workspaces elsewhere,
+        // you might not need to fetch here, just simulate the loading state
+        
+        // Simulate or perform actual API call
+        // const response = await api.get('/workspace');
+        // if (response.data.success) {
+        //   setWorkspaces(response.data.workspaces);
+        // }
+        
+        // Simulate network delay - remove in production if not needed
+        setTimeout(() => {
+          setWorkspacesLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error("Failed to load workspaces:", error);
+        setWorkspacesLoading(false);
+      }
+    };
+
+    fetchWorkspaces();
+  }, []);
 
   const handleWorkspaceClick = (workspaceId: string) => {
     router.push(`/dashboard/${workspaceId}`);
@@ -100,32 +128,49 @@ const Sidebar = () => {
           </Button>}
         </div>
         <div className="space-y-1 flex flex-col overflow-y-auto ">
-          {isSidebarOpen && workspaces?.map((workspace) => (
-            <div className='flex justify-between items-center' key={workspace.id}>
-              <Button
-                onClick={() => handleWorkspaceClick(workspace.id)}
-                variant="ghost"
-                className="w-full justify-start"
-              >
-                <Briefcase className="mr-2 h-4 w-4" />
-                {workspace.name}
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => openEditForm(workspace)}>Edit</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => deleteWorkspace(workspace.id)} className="text-red-600">Delete</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+          {isSidebarOpen && workspacesLoading ? (
+            // Skeleton UI for loading workspaces
+            <div className="space-y-2 animate-pulse">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-4 w-4 rounded-full bg-gray-200"></div>
+                    <div className="h-5 w-24 bg-gray-200 rounded"></div>
+                  </div>
+                  <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
+                </div>
+              ))}
             </div>
-          ))}
-          {isSidebarOpen && workspaces?.length<1 && 
-              <p className='text-center break-words text-base shadow-sm font-semibold text-red-800 my-5 mx-auto'>You don't have any workspace. Create one</p>
-          }
+          ) : (
+            <>
+              {isSidebarOpen && workspaces?.map((workspace) => (
+                <div className='flex justify-between items-center' key={workspace.id}>
+                  <Button
+                    onClick={() => handleWorkspaceClick(workspace.id)}
+                    variant="ghost"
+                    className="w-full justify-start"
+                  >
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    {workspace.name}
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => openEditForm(workspace)}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => deleteWorkspace(workspace.id)} className="text-red-600">Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ))}
+              {isSidebarOpen && !workspacesLoading && workspaces?.length < 1 && 
+                <p className='text-center break-words text-base shadow-sm font-semibold text-red-800 my-5 mx-auto'>You don't have any workspace. Create one</p>
+              }
+            </>
+          )}
         </div>
       </div>
       <Separator />
