@@ -28,6 +28,11 @@ app.get("/", (req, res) => {
     res.json({ message: "Api is running." })
 })
 
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong!' });
+});
+
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/todo", todoRouter)
 app.use("/api/v1/workspace", workspaceRouter)
