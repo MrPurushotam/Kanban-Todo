@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { NextFunction, Request, Response } from "express";
-import {verifyToken} from "../utils/jwtFunctions";
+import {verifyToken} from "../utils/jwtFunctions.js";
 
 export function authenticate(req:Request,res:Response,next:NextFunction){
     // const cookieAuthToken=req.cookies.token

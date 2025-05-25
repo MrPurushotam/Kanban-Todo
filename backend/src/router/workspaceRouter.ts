@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import { createWorkspace, updateWorkspace } from "../schema/workspace";
-import Workspace from "../models/workspace";
-import { authenticate } from "../middlewares/authMiddleware";
+import { createWorkspace, updateWorkspace } from "../schema/workspace.js";
+import Workspace from "../models/workspace.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router= Router();
 

@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs"
 import { Request, Response, Router } from "express";
-import { signinSchema } from "../schema/signinSchema";
-import User from "../models/user";
-import { createToken } from "../utils/jwtFunctions";
-import { authenticate } from "../middlewares/authMiddleware";
-import { signupSchema } from "../schema/signupSchema";
+import { signinSchema } from "../schema/signinSchema.js";
+import User from "../models/user.js";
+import { createToken } from "../utils/jwtFunctions.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
+import { signupSchema } from "../schema/signupSchema.js";
 import "dotenv/config"
 const router = Router();
 // @ts-epect-error

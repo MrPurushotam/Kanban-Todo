@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
-import { authenticate } from "../middlewares/authMiddleware";
-import { EnhancedWorkspaceController } from "../utils/systemPrompt";
-import Ai from "../models/aiConvo";
-import Todo from "../models/todo";
-import Workspace from "../models/workspace";
+import { authenticate } from "../middlewares/authMiddleware.js";
+import { EnhancedWorkspaceController } from "../utils/systemPrompt.js";
+import Ai from "../models/aiConvo.js";
+import Todo from "../models/todo.js";
+import Workspace from "../models/workspace.js";
 import mongoose from "mongoose";
 
 const router = Router();

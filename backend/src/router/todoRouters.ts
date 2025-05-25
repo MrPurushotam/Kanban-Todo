@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import { authenticate } from "../middlewares/authMiddleware";
-import Todo from "../models/todo";
-import { newTodoSchema, updateTodoSchema } from "../schema/newTodoSchema";
+import { authenticate } from "../middlewares/authMiddleware.js";
+import Todo from "../models/todo.js";
+import { newTodoSchema, updateTodoSchema } from "../schema/newTodoSchema.js";
 
 const router = Router();
 router.use(authenticate);

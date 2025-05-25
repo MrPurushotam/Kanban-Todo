@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors"
 import 'dotenv/config'
-import userRouter from "./router/userRouter"
-import todoRouter from "./router/todoRouters"
-import workspaceRouter from "./router/workspaceRouter"
-import aiRouter from "./router/aiRouter"
-import { dbConnect } from "./config/db";
 import cookieParser from "cookie-parser";
+import userRouter from "./router/userRouter.js"
+import todoRouter from "./router/todoRouters.js"
+import workspaceRouter from "./router/workspaceRouter.js"
+import aiRouter from "./router/aiRouter.js"
+import { dbConnect } from "./config/db.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000
@@ -21,8 +21,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser())
 
-// Connect to database - but don't wait for connection to start server
-dbConnect().catch(err => console.error("Database connection error:", err));
+dbConnect().catch((err:any) => console.error("Database connection error:", err));
 
 app.get("/", (req, res) => {
     res.json({ message: "Api is running." })
@@ -39,7 +38,7 @@ app.use("/api/v1/workspace", workspaceRouter)
 app.use("/api/v1/ai", aiRouter)
 
 // Only start the server in development mode
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "devlopment") {
     app.listen(PORT, () => {
         console.log("Server running on ", PORT)
     })

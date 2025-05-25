@@ -1,7 +1,7 @@
 // systemPrompt.js - Robust System Prompt Generator
 
 import { Request, Response } from "express";
-import { ai } from "./geminiFxn";
+import { ai } from "./geminiFxn.js";
 
 interface Preferences {
     maxTasks?: number;
