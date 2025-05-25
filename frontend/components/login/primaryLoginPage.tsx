@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EyeIcon, EyeOffIcon, ListIcon, Kanban , LoaderCircle } from 'lucide-react'
+import { EyeIcon, EyeOffIcon, ListIcon, Kanban, LoaderCircle, CheckCircle2, XCircle } from 'lucide-react'
 import { api } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 
 export default function PrimaryLogin() {
   const [showPassword, setShowPassword] = useState(false)
+  const [passwordFocused, setPasswordFocused] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,15 +25,19 @@ export default function PrimaryLogin() {
   const [signupNameError, setSignupNameError] = useState<string | null>(null);
   const [signupEmailError, setSignupEmailError] = useState<string | null>(null);
   const [signupPasswordError, setSignupPasswordError] = useState<string | null>(null);
+  const [signinEmailError, setSigninEmailError] = useState<string | null>(null);
+  
   const router = useRouter();
   const { toast }= useToast();
+  const isPasswordLengthValid = formData.password.length >= 6 && formData.password.length <= 16;
+  
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
 
     if (name === "username") {
-      if (value.length > 0 && value.length < 6) {
-        setSignupUsernameError("Username must be at least 6 characters.");
+      if (value.length > 0 && value.length < 7) {
+        setSignupUsernameError("Username must be at least 7 characters.");
       } else {
         setSignupUsernameError(null);
       }
@@ -48,9 +53,12 @@ export default function PrimaryLogin() {
       // Simple email regex for visible check
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (value.length > 0 && !emailRegex.test(value)) {
+        // Update both signup and signin email errors to handle validation in both forms
         setSignupEmailError("Please enter a valid email address.");
+        setSigninEmailError("Please enter a valid email address.");
       } else {
         setSignupEmailError(null);
+        setSigninEmailError(null);
       }
     }
     if (name === "password") {
@@ -76,8 +84,8 @@ export default function PrimaryLogin() {
     if (!formData.name) {
       setSignupNameError("Full name is required.");
       hasError = true;
-    } else if (formData.name.length < 6) {
-      setSignupNameError("Full name must be at least 6 characters.");
+    } else if (formData.name.length < 6 || formData.name.length > 30) {
+      setSignupNameError("Full name must be between 6-30 characters.");
       hasError = true;
     }
     if (!formData.email) {
@@ -93,8 +101,8 @@ export default function PrimaryLogin() {
     if (!formData.username) {
       setSignupUsernameError("Username is required.");
       hasError = true;
-    } else if (formData.username.length < 6) {
-      setSignupUsernameError("Username must be at least 6 characters.");
+    } else if (formData.username.length < 7 || formData.username.length > 15) {
+      setSignupUsernameError("Username must be between 7-15 characters.");
       hasError = true;
     }
     if (!formData.password) {
@@ -145,14 +153,31 @@ export default function PrimaryLogin() {
 
   const handleSignin = async (e: any) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
+    let hasError = false;
+    
+    // Enhanced validation for signin form
+    if (!formData.email) {
+      setSigninEmailError("Email is required.");
+      hasError = true;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setSigninEmailError("Please enter a valid email address.");
+        hasError = true;
+      }
+    }
+    
+    if (!formData.password) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Email and Password are required for login.",
+        description: "Password is required for login.",
       });
-      return;
+      hasError = true;
     }
+    
+    if (hasError) return;
+    
     setLoading(true);
     try {
       const object = {
@@ -249,7 +274,11 @@ export default function PrimaryLogin() {
                       type="email"
                       placeholder="Enter your email"
                       onChange={handleInputChange}
+                      className={signinEmailError ? "border-red-500" : ""}
                     />
+                    {signinEmailError && (
+                      <p className="text-red-500 text-xs mt-1">{signinEmailError}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signin-password">Password</Label>
@@ -329,6 +358,8 @@ export default function PrimaryLogin() {
                         placeholder="Create a password"
                         onChange={handleInputChange}
                         value={formData.password}
+                        onFocus={() => setPasswordFocused(true)}
+                        onBlur={() => setPasswordFocused(false)}
                       />
                       <button
                         type="button"
@@ -338,6 +369,20 @@ export default function PrimaryLogin() {
                         {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                       </button>
                     </div>
+                    
+                    {/* Password requirements display */}
+                    <div className={`mt-2 text-xs bg-gray-50 p-2 rounded transition-all ${passwordFocused || formData.password.length > 0 ? 'opacity-100' : 'opacity-0'}`}>
+                      <p className="font-medium mb-1">Password requirements:</p>
+                      <ul className="space-y-1">
+                        <li className="flex items-center">
+                          {isPasswordLengthValid 
+                            ? <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" /> 
+                            : <XCircle className="h-3 w-3 text-red-500 mr-1" />}
+                          Between 6-16 characters
+                        </li>
+                      </ul>
+                    </div>
+                    
                     {signupPasswordError && (
                       <p className="text-red-500 text-xs mt-1">{signupPasswordError}</p>
                     )}
