@@ -1,6 +1,6 @@
 "use client"
 
-import { workspaceAtom } from '@/states/atoms'
+import { workspaceAtom, globalLoadingAtom } from '@/states/atoms'
 import React, { useState, useEffect } from 'react'
 import { useRecoilState } from 'recoil'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
@@ -21,36 +21,26 @@ const PrimaryDashboard = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
     const [loadingWorkspaceId, setLoadingWorkspaceId] = useState<string | null>(null);
+    const [globalLoading, setGlobalLoading] = useRecoilState(globalLoadingAtom);
     const { toast } = useToast();
 
-    // Simulate initial data loading
+    // Simulate data fetching and set loading state
     useEffect(() => {
-        const loadWorkspaces = async () => {
+        const fetchWorkspaces = async () => {
+            setGlobalLoading("loading-workspaces");
             try {
-                setInitialLoading(true);
-                // You can replace this with your actual API call if needed
-                const response = await api.get('/workspace');
-                if (response.data.success) {
-                    setWorkspaces(response.data.workspaces);
-                }
+                // If you have actual API call for fetching workspaces, place it here
+                // For now, just simulating a delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
             } catch (error) {
-                console.error("Failed to load workspaces:", error);
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: "Failed to load your workspaces."
-                });
+                console.error("Error fetching workspaces:", error);
             } finally {
-                // Simulate network delay - remove this in production
-                setTimeout(() => {
-                    setInitialLoading(false);
-                }, 1000);
+                setGlobalLoading("");
             }
         };
-        
-        loadWorkspaces();
+
+        fetchWorkspaces();
     }, []);
 
     const handleWorkspaceClick = (id: String) => {
@@ -98,6 +88,21 @@ const PrimaryDashboard = () => {
         }
     }
 
+    // Skeleton loader component
+    const WorkspaceSkeleton = () => (
+        <div className="space-y-2">
+            {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex justify-between items-center animate-pulse">
+                    <div className="flex items-center space-x-2 w-full">
+                        <div className="w-4 h-4 rounded-full bg-gray-300"></div>
+                        <div className="h-8 bg-gray-300 rounded w-3/4"></div>
+                    </div>
+                    <div className="w-8 h-8 bg-gray-300 rounded"></div>
+                </div>
+            ))}
+        </div>
+    );
+
     return (
         <div className='w-3/4 mx-auto p-2 rounded-md space-y-3 mt-7 h-full'>
             {/* AI Prompt Dialog */}
@@ -135,19 +140,8 @@ const PrimaryDashboard = () => {
             </div>
 
             <div className="space-y-1 flex flex-col overflow-y-auto">
-                {initialLoading ? (
-                    // Loading skeleton UI
-                    <div className="space-y-2 animate-pulse">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                    <div className="h-4 w-4 rounded-full bg-gray-200"></div>
-                                    <div className="h-5 w-40 bg-gray-200 rounded"></div>
-                                </div>
-                                <div className="h-8 w-8 bg-gray-200 rounded"></div>
-                            </div>
-                        ))}
-                    </div>
+                {globalLoading==="loading-workspaces" ? (
+                    <WorkspaceSkeleton />
                 ) : (
                     <>
                         {workspaces?.map((workspace) => (
@@ -178,7 +172,7 @@ const PrimaryDashboard = () => {
                             </div>
                         ))}
                         {
-                            workspaces?.length < 1 &&
+                            workspaces?.length < 1 && globalLoading!=="loading-workspaces" &&
                             <div className="flex gap-2 w-full p-4 rounded-sm shadow-sm ">
                                 <div className="w-1/2">
                                     <img src={"https://png.pngtree.com/png-vector/20220513/ourmid/pngtree-oops-comic-bubble-sound-text-png-image_4574095.png"} alt="oops!" className='text-center aspect-[3/2] w-70 h-50 object-cover' />

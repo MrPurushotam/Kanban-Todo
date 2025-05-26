@@ -8,89 +8,88 @@ import { useSetRecoilState } from 'recoil'
 import { workspaceAtom } from '@/states/atoms'
 import { Workspace } from '@/types/todo'
 import { useToast } from '@/hooks/use-toast'
-import CommonToast from './CommonToast'
 
 interface WorkspaceFormProps {
     onCancel: () => void
     isOpen: boolean;
     isUpdating: boolean;
-    currentWorkspace?:Workspace | null;
+    currentWorkspace?: Workspace | null;
 }
 
 const WorkspaceForm: React.FC<WorkspaceFormProps> = ({ currentWorkspace, isUpdating, onCancel, isOpen }) => {
     const [workspaceName, setWorkspaceName] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const setWorkspaces=useSetRecoilState(workspaceAtom)
+    const setWorkspaces = useSetRecoilState(workspaceAtom)
     const { toast } = useToast();
     const maxLength = 69
     const workspaceRef = React.useRef<HTMLDivElement>(null);
 
-    useEffect(()=>{
+    useEffect(() => {
         document.addEventListener('click', handleOutsideClick);
         return () => {
             document.removeEventListener('click', handleOutsideClick);
         }
     })
 
-    const handleOutsideClick=(e: MouseEvent)=>{
-        if(workspaceRef.current && !workspaceRef.current.contains(e.target as Node)){
+    const handleOutsideClick = (e: MouseEvent) => {
+        if (workspaceRef.current && !workspaceRef.current.contains(e.target as Node)) {
             onCancel();
         }
     }
 
-    useEffect(()=>{
-        if(isUpdating && currentWorkspace?.id){
+    useEffect(() => {
+        if (isUpdating && currentWorkspace?.id) {
             setWorkspaceName(currentWorkspace.name);
         }
-    },[currentWorkspace])
+    }, [currentWorkspace])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (workspaceName.trim()) {
             setIsSubmitting(true)
             try {
-                let resp:any;
+                let resp: any;
                 if (isUpdating && currentWorkspace?.id) {
                     resp = await api.put("/workspace/", { id: currentWorkspace?.id, newName: workspaceName });
                     if (resp.data.success) {
                         toast({
-                            variant:"default",
-                            title:"Success",
-                            description:"Updated workspace."
-                          });
-                          setWorkspaces(prev=>prev.map(workspace=>(workspace.id===currentWorkspace?.id)?{...workspace,name:resp.data.Workspace.name}:workspace))
-                    }else{
+                            variant: "default",
+                            title: "Success",
+                            description: "Updated workspace."
+                        });
+                        setWorkspaces(prev => prev.map(workspace => (workspace.id === currentWorkspace?.id) ? { ...workspace, name: resp.data.Workspace.name } : workspace))
+                    } else {
                         toast({
-                            variant:"default",
-                            description:"Could not update workspace "+resp.data.error
-                          });
-                          
+                            variant: "default",
+                            description: "Could not update workspace " + resp.data.error
+                        });
+
                     }
                 } else {
                     resp = await api.post("/workspace/", { name: workspaceName })
                     if (resp.data.success) {
                         toast({
-                            variant:"default",
-                            title:"Success",
-                            description:"Created workspace."
-                          });
-                        setWorkspaces(prev=>[...prev,resp.data.Workspace])
-                    }else{
+                            variant: "default",
+                            title: "Success",
+                            description: "Created workspace."
+                        });
+                        setWorkspaces(prev => [...prev, resp.data.Workspace])
+                    } else {
                         toast({
-                            variant:"default",
-                            description:"Could not create"+resp.data.error
+                            variant: "default",
+                            description: "Could not create" + resp.data.error
                         });
                     }
                 }
                 setWorkspaceName('')
-            } catch (error:any) {
+            } catch (error: any) {
                 console.error('Failed to submit workspace:', error.message)
                 toast({
-                    variant:"destructive",
-                    title:"Error",
-                    description:error.message
-                  });
-                } finally {
+                    variant: "destructive",
+                    title: "Error",
+                    description: error.message
+                });
+            } finally {
                 setIsSubmitting(false)
                 onCancel();
             }

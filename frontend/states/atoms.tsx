@@ -87,3 +87,7 @@ export const OnlineStatusAtom=atom({
         }
     ]
 })
+export const globalLoadingAtom=atom<string>({
+    key:"globalLoading",
+    default:""
+})

@@ -26,35 +26,35 @@ const AiPrompt = ({ isOpen, setIsOpen }: AiPromptProps) => {
     const [error, setError] = useState<string | null>(null)
     const setWorkspace = useSetRecoilState(workspaceAtom);
     const { toast } = useToast();
-    
+
     const validatePrompt = (text: string): boolean => {
         // Trim the text to remove whitespace
         const trimmedText = text.trim();
-        
+
         // Check if the prompt is empty or too short
         if (!trimmedText) {
             setError("Please enter a prompt");
             return false;
         }
-        
+
         if (trimmedText.length < 3) {
             setError("Prompt is too short");
             return false;
         }
-        
+
         // Clear any previous errors
         setError(null);
         return true;
     }
-    
+
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault()
-        
+
         // Validate the prompt before proceeding
         if (!validatePrompt(prompt)) {
             return;
         }
-        
+
         setLoading(true)
         try {
             const resp = await api.post("/ai/generate", { prompt })
@@ -62,11 +62,11 @@ const AiPrompt = ({ isOpen, setIsOpen }: AiPromptProps) => {
             if (data.success) {
                 // Add the new workspace to state
                 setWorkspace(prev => [...prev, data.workspace])
-                
+
                 // Show an actionable toast with a clear CTA
-                toast({ 
-                    variant: "default", 
-                    title: "Workspace Created! 🎉", 
+                toast({
+                    variant: "default",
+                    title: "Workspace Created! 🎉",
                     description: "Tap here to start with your AI-generated workspace",
                     action: <Button variant="outline" size="sm">View Now</Button>,
                     duration: 5000, // Show for longer so user has time to interact
@@ -75,7 +75,7 @@ const AiPrompt = ({ isOpen, setIsOpen }: AiPromptProps) => {
                         // This will be triggered when the user clicks the toast
                         // You can add navigation logic here if needed
                         // For example, scroll to the new workspace or highlight it
-                        document.getElementById(`workspace-${data.workspace.id}`)?.scrollIntoView({ 
+                        document.getElementById(`workspace-${data.workspace.id}`)?.scrollIntoView({
                             behavior: 'smooth',
                             block: 'center'
                         });
@@ -110,14 +110,14 @@ const AiPrompt = ({ isOpen, setIsOpen }: AiPromptProps) => {
                             <p className="text-sm text-gray-500 mb-2">
                                 Describe the tasks you need to complete or a project you're working on.
                             </p>
-                            
+
                             <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 text-sm">
                                 <p className="font-medium text-blue-800">Pro tip: Create smart prompts</p>
                                 <p className="text-blue-700">
                                     Be specific about your project, include deadlines, priorities, and categories to get well-organized todos.
                                 </p>
                             </div>
-                            
+
                             <Textarea
                                 id="ai-prompt-input"
                                 value={prompt}

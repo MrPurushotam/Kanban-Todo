@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { Menu, Briefcase, LogOut, Plus, MoreVertical, LoaderCircle } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Workspace } from '@/types/todo'
 import { SidebarAtom } from '@/states/SidebarAtoms'
-import { userDetailsAtom, workspaceAtom } from '@/states/atoms'
+import { userDetailsAtom, workspaceAtom, globalLoadingAtom } from '@/states/atoms'
 import { useRouter } from 'next/navigation'
 import WorkspaceForm from './WorkspaceForm';
 import { api } from '@/lib/api';
@@ -28,34 +28,7 @@ const Sidebar = () => {
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev)
   const { toast } = useToast();
   const [loading, setLoading] = useState<"logout" | "">("");
-  const [workspacesLoading, setWorkspacesLoading] = useState(true);
-
-  // Add effect to simulate/handle initial workspace loading
-  useEffect(() => {
-    const fetchWorkspaces = async () => {
-      try {
-        setWorkspacesLoading(true);
-        // If you already have a mechanism to fetch workspaces elsewhere,
-        // you might not need to fetch here, just simulate the loading state
-        
-        // Simulate or perform actual API call
-        // const response = await api.get('/workspace');
-        // if (response.data.success) {
-        //   setWorkspaces(response.data.workspaces);
-        // }
-        
-        // Simulate network delay - remove in production if not needed
-        setTimeout(() => {
-          setWorkspacesLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error("Failed to load workspaces:", error);
-        setWorkspacesLoading(false);
-      }
-    };
-
-    fetchWorkspaces();
-  }, []);
+  const globalLoading = useRecoilValue(globalLoadingAtom);
 
   const handleWorkspaceClick = (workspaceId: string) => {
     router.push(`/dashboard/${workspaceId}`);
@@ -101,11 +74,26 @@ const Sidebar = () => {
 
     }
   }
+  // Skeleton loader component for workspaces
+  const WorkspaceSkeleton = () => (
+    <div className="space-y-2">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex justify-between items-center animate-pulse">
+          <div className="flex items-center space-x-2 w-full">
+            <div className="w-4 h-4 rounded-full bg-gray-300"></div>
+            <div className="h-8 bg-gray-300 rounded w-3/4"></div>
+          </div>
+          <div className="w-8 h-8 bg-gray-300 rounded"></div>
+        </div>
+      ))}
+    </div>
+  );
+
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-4">
-          <Avatar onClick={()=>router.push("/dashboard")}>
+          <Avatar onClick={() => router.push("/dashboard")}>
             <AvatarFallback onClick={() => !isSidebarOpen && toggleSidebar()}>{loggedUser?.username.charAt(0).toUpperCase() || "D"}</AvatarFallback>
           </Avatar>
           {isSidebarOpen && (
@@ -127,20 +115,9 @@ const Sidebar = () => {
             <Plus className="h-4 w-4" />
           </Button>}
         </div>
-        <div className="space-y-1 flex flex-col overflow-y-auto ">
-          {isSidebarOpen && workspacesLoading ? (
-            // Skeleton UI for loading workspaces
-            <div className="space-y-2 animate-pulse">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="h-4 w-4 rounded-full bg-gray-200"></div>
-                    <div className="h-5 w-24 bg-gray-200 rounded"></div>
-                  </div>
-                  <div className="h-6 w-6 bg-gray-200 rounded-full"></div>
-                </div>
-              ))}
-            </div>
+        <div className="space-y-1 flex flex-col overflow-y-auto">
+          {isSidebarOpen && globalLoading === "loading-workspaces" ? (
+            <WorkspaceSkeleton />
           ) : (
             <>
               {isSidebarOpen && workspaces?.map((workspace) => (
@@ -150,12 +127,14 @@ const Sidebar = () => {
                     variant="ghost"
                     className="w-full justify-start"
                   >
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    {workspace.name}
+                    <Briefcase className="mr-2 h-4 w-4 flex-shrink-0" />
+                    <span className="truncate max-w-[140px] overflow-hidden" title={workspace.name}>
+                      {workspace.name}
+                    </span>
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -166,7 +145,7 @@ const Sidebar = () => {
                   </DropdownMenu>
                 </div>
               ))}
-              {isSidebarOpen && !workspacesLoading && workspaces?.length < 1 && 
+              {isSidebarOpen && workspaces?.length < 1 && globalLoading !== "loading-workspaces" &&
                 <p className='text-center break-words text-base shadow-sm font-semibold text-red-800 my-5 mx-auto'>You don't have any workspace. Create one</p>
               }
             </>
@@ -175,15 +154,15 @@ const Sidebar = () => {
       </div>
       <Separator />
       <div className="p-4 bottom-1 w-full">
-        <Button variant="ghost" className={`flex ${isSidebarOpen ? "justify-start" : "w-fit justify-start items-center text-center text-2xl"}`} 
-        onClick={()=>{
-          setLoading("logout");
-          logout()
-          setLoading("");
-        }}
-        disabled={loading==="logout"}
+        <Button variant="ghost" className={`flex ${isSidebarOpen ? "justify-start" : "w-fit justify-start items-center text-center text-2xl"}`}
+          onClick={() => {
+            setLoading("logout");
+            logout()
+            setLoading("");
+          }}
+          disabled={loading === "logout"}
         >
-          {loading==="logout"?<LoaderCircle className="animate-spin mx-auto" />: <><LogOut className="mr-2 h-4 w-4 text-red-500" /> {isSidebarOpen && "Logout"}</>}
+          {loading === "logout" ? <LoaderCircle className="animate-spin mx-auto" /> : <><LogOut className="mr-2 h-4 w-4 text-red-500" /> {isSidebarOpen && "Logout"}</>}
         </Button>
       </div>
     </div>
