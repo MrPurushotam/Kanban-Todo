@@ -23,25 +23,39 @@ const WorkspaceForm: React.FC<WorkspaceFormProps> = ({ currentWorkspace, isUpdat
     const { toast } = useToast();
     const maxLength = 69
     const workspaceRef = React.useRef<HTMLDivElement>(null);
+    const [enableOutsideClick, setEnableOutsideClick] = useState(false);
+
+    // Debug the props when they change
+    useEffect(() => {
+        if (isOpen) {
+            if (isUpdating && currentWorkspace?.name) {
+                setWorkspaceName(currentWorkspace.name);
+            } else {
+                setWorkspaceName("");
+            }
+            setTimeout(() => {
+                setEnableOutsideClick(true);
+            }, 300);
+        } else {
+            setEnableOutsideClick(false);
+        }
+    }, [isOpen, isUpdating, currentWorkspace]);
 
     useEffect(() => {
-        document.addEventListener('click', handleOutsideClick);
+        if (isOpen && enableOutsideClick) {
+            document.addEventListener('click', handleOutsideClick);
+        }
+
         return () => {
             document.removeEventListener('click', handleOutsideClick);
-        }
-    })
+        };
+    }, [isOpen, enableOutsideClick]);
 
     const handleOutsideClick = (e: MouseEvent) => {
         if (workspaceRef.current && !workspaceRef.current.contains(e.target as Node)) {
             onCancel();
         }
     }
-
-    useEffect(() => {
-        if (isUpdating && currentWorkspace?.id) {
-            setWorkspaceName(currentWorkspace.name);
-        }
-    }, [currentWorkspace])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

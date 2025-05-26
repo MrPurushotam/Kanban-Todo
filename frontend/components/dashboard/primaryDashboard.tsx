@@ -1,8 +1,8 @@
 "use client"
 
 import { workspaceAtom, globalLoadingAtom } from '@/states/atoms'
-import React, { useState, useEffect } from 'react'
-import { useRecoilState } from 'recoil'
+import React, { useState } from 'react'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
@@ -22,26 +22,9 @@ const PrimaryDashboard = () => {
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [loadingWorkspaceId, setLoadingWorkspaceId] = useState<string | null>(null);
-    const [globalLoading, setGlobalLoading] = useRecoilState(globalLoadingAtom);
+    const globalLoading = useRecoilValue(globalLoadingAtom);
+    const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const { toast } = useToast();
-
-    // Simulate data fetching and set loading state
-    useEffect(() => {
-        const fetchWorkspaces = async () => {
-            setGlobalLoading("loading-workspaces");
-            try {
-                // If you have actual API call for fetching workspaces, place it here
-                // For now, just simulating a delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
-            } catch (error) {
-                console.error("Error fetching workspaces:", error);
-            } finally {
-                setGlobalLoading("");
-            }
-        };
-
-        fetchWorkspaces();
-    }, []);
 
     const handleWorkspaceClick = (id: String) => {
         setLoadingWorkspaceId(id as string);
@@ -49,8 +32,11 @@ const PrimaryDashboard = () => {
         router.push(`/dashboard/${id}`);
     }
     const openEditForm = (workspace: Workspace) => {
+        setOpenDropdownId(null);
+
         setEditWorkspace(workspace);
         setIsFormOpen(true);
+        console.log("Edit form triggered for:", workspace.name);
     };
 
     const openCreateForm = () => {
@@ -116,9 +102,7 @@ const PrimaryDashboard = () => {
                     setIsFormOpen(false);
                 }}
             />
-
-
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-7">
                 <h2 className="text-2xl font-semibold text-gray-900 tracking-wide">Your Workspaces</h2>
                 <div className="flex items-center gap-2">
                     <div className="relative moving-border">
@@ -140,7 +124,7 @@ const PrimaryDashboard = () => {
             </div>
 
             <div className="space-y-1 flex flex-col overflow-y-auto">
-                {globalLoading==="loading-workspaces" ? (
+                {globalLoading === "loading-workspaces" ? (
                     <WorkspaceSkeleton />
                 ) : (
                     <>
@@ -158,7 +142,16 @@ const PrimaryDashboard = () => {
                                         <LoaderCircle className="ml-2 h-4 w-4 animate-spin" />
                                     )}
                                 </Button>
-                                <DropdownMenu>
+                                <DropdownMenu
+                                    open={openDropdownId === workspace.id}
+                                    onOpenChange={(open) => {
+                                        if (open) {
+                                            setOpenDropdownId(workspace.id);
+                                        } else {
+                                            setOpenDropdownId(null);
+                                        }
+                                    }}
+                                >
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" size="icon" className="h-8 w-8">
                                             <MoreVertical className="h-4 w-4" />
@@ -172,7 +165,7 @@ const PrimaryDashboard = () => {
                             </div>
                         ))}
                         {
-                            workspaces?.length < 1 && globalLoading!=="loading-workspaces" &&
+                            workspaces?.length < 1 && globalLoading !== "loading-workspaces" &&
                             <div className="flex gap-2 w-full p-4 rounded-sm shadow-sm ">
                                 <div className="w-1/2">
                                     <img src={"https://png.pngtree.com/png-vector/20220513/ourmid/pngtree-oops-comic-bubble-sound-text-png-image_4574095.png"} alt="oops!" className='text-center aspect-[3/2] w-70 h-50 object-cover' />
