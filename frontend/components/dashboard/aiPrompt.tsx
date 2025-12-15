@@ -111,11 +111,22 @@ const AiPrompt = ({ isOpen, setIsOpen }: AiPromptProps) => {
                                 Describe the tasks you need to complete or a project you're working on.
                             </p>
 
-                            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 text-sm">
-                                <p className="font-medium text-blue-800">Pro tip: Create smart prompts</p>
-                                <p className="text-blue-700">
-                                    Be specific about your project, include deadlines, priorities, and categories to get well-organized todos.
+                            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 rounded-md shadow-sm text-sm">
+                                <p className="font-semibold text-blue-900 mb-1 flex items-center gap-2">
+                                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
+                                    Pro tip: Create smart prompts
                                 </p>
+                                <ul className="list-disc list-inside text-blue-800 pl-2 space-y-1">
+                                    <li>
+                                        Be <span className="font-medium">specific</span> about your project.
+                                    </li>
+                                    <li>
+                                        Include <span className="font-medium">deadlines</span>, <span className="font-medium">priorities</span>, and <span className="font-medium">categories</span> for better results.
+                                    </li>
+                                    <li>
+                                        If you get an error, try describing your requirement in more detail.
+                                    </li>
+                                </ul>
                             </div>
 
                             <Textarea

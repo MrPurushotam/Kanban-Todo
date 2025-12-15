@@ -39,7 +39,8 @@ const todoSchema: Schema<Todo> = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: "Workspace",
             required: true,
-        }, createdBy: {
+        },
+        createdBy: {
             type: String,
             required: [true, "Created by is required."],
             default: "User",

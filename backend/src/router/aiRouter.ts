@@ -79,10 +79,10 @@ router.post("/generate", async (req: Request, res: Response) => {
     } catch (error: any) {
         await session.abortTransaction();
         session.endSession();
-        console.log("Error occured while generating content", error)
+        console.log("Error occurred while generating content", error)
         res.status(500).json({
             success: false,
-            message: "Error occured while generating content",
+            message: "Error occurred while generating content",
             error: error.message
         })
     }

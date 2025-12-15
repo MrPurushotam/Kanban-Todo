@@ -90,9 +90,8 @@ const PrimaryDashboard = () => {
     );
 
     return (
-        <div className='w-3/4 mx-auto p-2 rounded-md space-y-3 mt-7 h-full'>
+        <div className='w-full max-w-3xl mx-auto p-2 rounded-md space-y-3 mt-7 h-full'>
             {/* AI Prompt Dialog */}
-            <AiPrompt isOpen={isAiFormOpen} setIsOpen={setIsAiFormOpen} />
             <WorkspaceForm
                 isUpdating={editWorkspace ? true : false}
                 currentWorkspace={editWorkspace}
@@ -102,26 +101,51 @@ const PrimaryDashboard = () => {
                     setIsFormOpen(false);
                 }}
             />
-            <div className="flex justify-between items-center mb-7">
-                <h2 className="text-2xl font-semibold text-gray-900 tracking-wide">Your Workspaces</h2>
-                <div className="flex items-center gap-2">
+            <AiPrompt isOpen={isAiFormOpen} setIsOpen={setIsAiFormOpen} />
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-7">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 tracking-tight">
+                    Your Workspaces
+                </h2>
+
+                <div className="flex flex-wrap items-center gap-2">
+                    {/* AI Generate Button */}
                     <div className="relative moving-border">
                         <Button
                             onClick={() => setIsAiFormOpen(true)}
-                            variant="default"
-                            className="flex items-center gap-1.5 px-3 py-1.5 h-auto text-sm bg-opacity-90 hover:bg-opacity-100 transition-all shadow-sm border-gray-200 text-gray-100 hover:text-gray-200 hover:border-gray-300 whitespace-nowrap relative z-10"
+                            className="relative z-10 flex items-center gap-2
+                                px-4 py-2 h-10
+                                text-sm font-medium
+                                bg-gray-900 text-white
+                                hover:bg-gray-800 transition-all
+                                shadow-sm
+                                whitespace-nowrap shrink-0"
                         >
-                            <BrainCircuit className="h-3.5 w-3.5" />
-                            Generate Workspace
+                            <BrainCircuit className="h-4 w-4 shrink-0" />
+                            <span>Generate</span>
+                            <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold uppercase">
+                                AI
+                            </span>
                         </Button>
-                        <span aria-hidden="true"></span>
+                        {/* <span aria-hidden="true" /> */}
                     </div>
-                    <Button onClick={openCreateForm} variant="outline" className="flex items-center gap-1.5 px-3 py-1.5 h-auto text-sm bg-opacity-90 hover:bg-opacity-100 transition-all shadow-sm border-gray-200 text-gray-700 hover:text-gray-900 hover:border-gray-300 whitespace-nowrap">
-                        <Plus className="h-3.5 w-3.5" />
-                        Create Workspace
+
+                    {/* Manual Create Button */}
+                    <Button
+                        onClick={openCreateForm}
+                        variant="outline"
+                        className="flex items-center gap-2 rounded-md
+                 px-3 sm:px-4 py-2 text-sm font-medium
+                 border-gray-300 text-gray-800
+                 hover:bg-gray-900 hover:text-white hover:border-gray-900
+                 transition-all whitespace-nowrap"
+                    >
+                        <Plus className="h-4 w-4" />
+                        <span className="hidden xs:inline">New Workspace</span>
+                        <span className="xs:hidden">New</span>
                     </Button>
                 </div>
             </div>
+
 
             <div className="space-y-1 flex flex-col overflow-y-auto">
                 {globalLoading === "loading-workspaces" ? (
@@ -133,11 +157,11 @@ const PrimaryDashboard = () => {
                                 <Button
                                     onClick={() => handleWorkspaceClick(workspace.id)}
                                     variant="ghost"
-                                    className="w-full justify-start"
+                                    className="w-full justify-start text-xs sm:text-sm px-2 sm:px-4"
                                     disabled={isLoading && loadingWorkspaceId === workspace.id}
                                 >
                                     <Briefcase className="mr-2 h-4 w-4" />
-                                    {workspace.name}
+                                    <span className="truncate">{workspace.name}</span>
                                     {isLoading && loadingWorkspaceId === workspace.id && (
                                         <LoaderCircle className="ml-2 h-4 w-4 animate-spin" />
                                     )}
@@ -166,13 +190,13 @@ const PrimaryDashboard = () => {
                         ))}
                         {
                             workspaces?.length < 1 && globalLoading !== "loading-workspaces" &&
-                            <div className="flex gap-2 w-full p-4 rounded-sm shadow-sm ">
-                                <div className="w-1/2">
-                                    <img src={"https://png.pngtree.com/png-vector/20220513/ourmid/pngtree-oops-comic-bubble-sound-text-png-image_4574095.png"} alt="oops!" className='text-center aspect-[3/2] w-70 h-50 object-cover' />
+                            <div className="flex flex-col sm:flex-row gap-2 w-full p-4 rounded-sm shadow-sm items-center">
+                                <div className="w-full sm:w-1/2 flex justify-center mb-2 sm:mb-0">
+                                    <img src={"https://png.pngtree.com/png-vector/20220513/ourmid/pngtree-oops-comic-bubble-sound-text-png-image_4574095.png"} alt="oops!" className='aspect-[3/2] w-40 sm:w-70 h-32 sm:h-50 object-cover' />
                                 </div>
-                                <div className="w-1/2 h-50 flex items-center">
-                                    <Briefcase className="w-8 h-8 text-sky-300" />
-                                    <h2 className=' break-words text-xl font-semibold text-gray-80'>Yoou have no workspace. Create it asap!</h2>
+                                <div className="w-full sm:w-1/2 h-32 sm:h-50 flex flex-col justify-center items-center sm:items-start">
+                                    <Briefcase className="w-8 h-8 text-sky-300 mb-2" />
+                                    <h2 className='break-words text-base sm:text-xl font-semibold text-gray-800 text-center sm:text-left'>You have no workspace. Create it asap!</h2>
                                 </div>
                             </div>
                         }

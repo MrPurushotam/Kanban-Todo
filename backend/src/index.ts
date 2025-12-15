@@ -7,6 +7,8 @@ import todoRouter from "./router/todoRouters.js"
 import workspaceRouter from "./router/workspaceRouter.js"
 import aiRouter from "./router/aiRouter.js"
 import { dbConnect } from "./config/db.js";
+import { genericRateLimiter } from "./middlewares/genericRateLimiter.js";
+import { aiPromptRateLimiter } from "./middlewares/aiRateLimiter.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000
@@ -21,7 +23,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser())
 
-dbConnect().catch((err:any) => console.error("Database connection error:", err));
+dbConnect().catch((err: any) => console.error("Database connection error:", err));
 
 app.get("/", (req, res) => {
     res.json({ message: "Api is running." })
@@ -32,10 +34,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-app.use("/api/v1/user", userRouter)
-app.use("/api/v1/todo", todoRouter)
-app.use("/api/v1/workspace", workspaceRouter)
-app.use("/api/v1/ai", aiRouter)
+app.use("/api/v1/user", genericRateLimiter, userRouter)
+app.use("/api/v1/todo", genericRateLimiter, todoRouter)
+app.use("/api/v1/workspace", genericRateLimiter, workspaceRouter)
+app.use("/api/v1/ai", aiPromptRateLimiter, aiRouter);
 
 // Only start the server in development mode
 if (process.env.NODE_ENV === "devlopment") {
